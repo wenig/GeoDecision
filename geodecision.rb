@@ -69,7 +69,7 @@ class GeoDecision
 				y += p[1]
 				x += p[0]
 			end
-			if result.length == 0 or getVectorLen(icog, [x,y]) < getVectorLen(icog, result)
+			if result.length == 0 || getVectorLen(icog, [x,y]) < getVectorLen(icog, result)
 				result = []
 				result.push(x)
 				result.push(y)

@@ -10,7 +10,8 @@ class GeoDecision:
 			x.append(0)
 		elif not isinstance(x, list) or not len(x) == 3:
 			return
-		self.Options.append(x)
+		if all((isinstance(o,int)) for o in x):
+			self.Options.append(x)
 		return
 
 	def add_Path(self, p):

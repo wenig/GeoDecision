@@ -51,28 +51,11 @@ class GeoDecision
 		result = []
 		icog = decide()
 		@Paths.each do |p|
-			if (p[2]-p[0]) == 0
-				y = icog[1]
-				x = p[0]
-			elsif (p[3]-p[1]) == 0
-				y = p[1]
-				x = icog[0]
-			else
-				slope = (p[3]-p[1]) / (p[2]-p[0])
-				a = getVectorLen([p[2],p[3]], icog)
-				b = getVectorLen(icog, [p[0],p[1]])
-				c = getVectorLen([p[0],p[1]], [p[2],p[3]])
-				t1 = p[1] - (slope*p[0])
-				t2 = icog[1] - (-(slope**(-1))*icog[0])
-				x = (t2 - t1)/(slope-(-(slope**(-1))))
-				y = (slope*x)+t1
-				y += p[1]
-				x += p[0]
-			end
-			if result.length == 0 || getVectorLen(icog, [x,y]) < getVectorLen(icog, result)
+			closePoint = get_closest_Point_on_Path(icog, p)
+			if result.length == 0 || (getVectorLen(icog, closePoint)*((100-p[4])/100)) < getVectorLen(icog, result)
 				result = []
-				result.push(x)
-				result.push(y)
+				result.push(closePoint[0])
+				result.push(closePoint[1])
 			end
 		end
 		return result
@@ -102,5 +85,27 @@ class GeoDecision
 
 	def getVectorLen(a, b)
 		return Math.sqrt(((b[1]-a[1])**2)+((b[0]-a[0])**2))
+	end
+
+	def get_closest_Point_on_Path(point, path)
+		if (path[2]-path[0]) == 0
+				y = point[1]
+				x = path[0]
+		elsif (path[3]-path[1]) == 0
+			y = path[1]
+			x = point[0]
+		else
+			slope = (path[3]-path[1]) / (path[2]-path[0])
+			a = getVectorLen([path[2],path[3]], point)
+			b = getVectorLen(point, [path[0],path[1]])
+			c = getVectorLen([path[0],path[1]], [path[2],path[3]])
+			t1 = path[1] - (slope*path[0])
+			t2 = point[1] - (-(slope**(-1))*point[0])
+			x = (t2 - t1)/(slope-(-(slope**(-1))))
+			y = (slope*x)+t1
+			y += path[1]
+			x += path[0]
+		end
+		return [x, y]
 	end
 end

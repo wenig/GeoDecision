@@ -1,0 +1,126 @@
+<html>
+<head>
+	<script src="http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=en-US" type="text/javascript"> </script>
+	<script src="geodecision.js" type="text/javascript"></script>
+	<script type="text/javascript">
+    var myMap;
+    var myCollection = [];
+    var icon = {
+    	default: 'twirl#blueIcon',	
+    	middle: 'twirl#greyDotIcon',
+    	decide: 'twirl#redDotIcon'
+    };
+    var actX = "";
+    var actY = "";
+    var wait = false;
+    var waitpara = [];
+    ymaps.ready(function () {
+        myMap = new ymaps.Map("YMapsID", {
+            center: [52.50, 13.40],
+            zoom: 10,
+            behaviors: ['default', 'scrollZoom']
+        });
+        myMap.controls.add('zoomControl');
+        myMap.events.add('click', function(e){
+        	var newCoords = e.get('coordPosition');
+        	actX = newCoords[0];
+        	actY = newCoords[1];
+        	if(wait){
+        		document.getElementById(waitpara[0]).childNodes[0].value = actX;
+				document.getElementById(waitpara[0]).childNodes[1].value = actY;
+				actX = "";
+				actY = "";
+				if(document.getElementById("Control-Panel").children.length == waitpara[0]){
+					addPoint(waitpara[1]);
+				}else{
+					editPoint(waitpara[1]);
+				}				
+				waitpara = [];
+				wait = false;
+        	}
+        });
+    });
+</script>
+</head>
+<body style="margin:0;">
+	<div id="YMapsID" style="width: 100%; height: 65vh;"></div>
+	<div id="Control-Panel" style="width:100%;">
+		<div id="1"><input class="px" data-number="1" type="text"><input class="py" data-number="1" type="text"><input value="0" class="pp" data-number="1" type="text"><button onclick="addPoint(this)" data-number="1" class="pb" id="button1">add</button><button data-number="1" onclick="choose(this)">choose</button></div>
+	</div>
+	<button onclick="geo_middle()">Center of Gravity</button>
+	<button onclick="geo_decide()">Influenced Center of Gravity</button>
+	<script>
+		var geo = new GeoDecision();
+
+		//---------------Functions------------------
+
+		function geo_middle(){
+			addPlacemark(geo.middle(), "middle");
+		}
+
+		function geo_decide(){
+			addPlacemark(geo.decide(), "decide");
+		}
+
+		function addPlacemark(coords, key){
+			if(key == "middle" || key == "decide"){
+				try{
+					myCollection[key].removeAll();
+				}catch(Exception){}
+				myCollection[key] = new ymaps.GeoObjectCollection({}, {preset: icon[key], draggable: false }).add(new ymaps.Placemark([String(coords[0]),String(coords[1])]));
+			}else{
+				geo.add_Option([parseFloat(coords[0]),parseFloat(coords[1]),parseFloat(coords[2])]);
+				myCollection[key] = new ymaps.GeoObjectCollection({}, {preset: icon['default'], draggable: false }).add(new ymaps.Placemark(coords));
+			}
+		    myMap.geoObjects.add(myCollection[key]);
+		}
+
+		function addPoint(node){
+			number = node.getAttribute("data-number");
+			input = parseInt(number)+1;
+			var px = document.getElementById(input-1).childNodes[0].value;
+			var py = document.getElementById(input-1).childNodes[1].value;
+			var pp = document.getElementById(input-1).childNodes[2].value;
+			if(px != "" || py != ""){
+				document.getElementById("button"+(input-1)).setAttribute('onclick', 'delPoint(this)');
+				document.getElementById("button"+(input-1)).innerHTML = "delete";
+				var edit = document.createElement('button');
+				edit.setAttribute('onclick', 'editPoint(this)');
+				edit.setAttribute('data-number', input-1);
+				edit.className = 'pe';
+				edit.innerHTML = 'edit';
+				document.getElementById(input-1).appendChild(edit);
+				addPlacemark([px, py, pp], input-1);
+	        	var div = document.createElement('div');
+	        	div.id = input;
+				div.innerHTML = '<input class="px" data-number="'+input+'" type="text"><input class="py" data-number="'+input+'" type="text"><input value="0" class="pp" data-number="'+input+'" type="text"><button onclick="addPoint(this)" data-number="'+input+'" class="pb" id="button'+input+'">add</button><button data-number="'+input+'" onclick="choose(this)">choose</button>';
+	        	document.getElementById("Control-Panel").appendChild(div);
+        	}
+		}
+
+		function delPoint(node){
+			number = node.getAttribute("data-number");
+			document.getElementById("Control-Panel").removeChild(document.getElementById(number));
+			myCollection[number].removeAll();
+		}
+
+		function editPoint(node){
+			number = node.getAttribute("data-number");
+			myCollection[number].removeAll();
+			var px = document.getElementById(number).childNodes[0].value;
+			var py = document.getElementById(number).childNodes[1].value;
+			var pp = document.getElementById(number).childNodes[2].value;
+			addPlacemark([px, py, pp], number);
+		}
+
+		function choose(node){
+			number = node.getAttribute("data-number");
+			actX = "";
+			actY = "";
+			wait = true;
+			waitpara.push(number);
+			waitpara.push(node);
+		}
+	</script>
+</body>
+</html>

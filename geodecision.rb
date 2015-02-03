@@ -1,26 +1,26 @@
 class GeoDecision
 
 	def initialize
-		@Options = []
-		@Paths = []
+		@Options = Hash.new
+		@Paths = Hash.new
 	end
 
-	def add_Option(x)
+	def add_Option(id, x)
 		if x.is_a?(Array) && x.length == 2
 			x.push(0)
 		elsif not x.is_a?(Array) || x.length != 3
 			return
 		end
 		if x.all? {|o| o.is_a?(Integer)}
-			@Options.push(x)
+			@Options[id] = x
 		end
 		return
 	end
 
-	def add_Path(p)
+	def add_Path(id, p)
 		if p.is_a?(Array)
 			if p.all? {|x| x.is_a?(Integer) and p.length == 4}
-				@Paths.push(p)
+				@Paths[id] = p
 			end
 		end
 		return
@@ -29,7 +29,7 @@ class GeoDecision
 	def middle
 		x = 0
 		y = 0
-		@Options.each do |co|
+		@Options.each do |key, co|
 			x = x + co[0]
 			y = y + co[1]
 		end
@@ -40,7 +40,7 @@ class GeoDecision
 		middle = middle()
 		x = 0.0
 		y = 0.0
-		@Options.each do |co|
+		@Options.each do |key, co|
 			x = x + co[0]+((co[0]-middle[0])*(co[2]/100))
 			y = y + co[1]+((co[1]-middle[1])*(co[2]/100))
 		end
@@ -50,7 +50,7 @@ class GeoDecision
 	def decide_Magnetic
 		result = []
 		icog = decide()
-		@Paths.each do |p|
+		@Paths.each do |key, p|
 			closePoint = get_closest_Point_on_Path(icog, p)
 			if result.length == 0 || (getVectorLen(icog, closePoint)*((100-p[4])/100)) < getVectorLen(icog, result)
 				result = []
@@ -61,18 +61,20 @@ class GeoDecision
 		return result
 	end
 
-	def get_Paths(x)
-		if not x.is_a?(Integer)
-			return
-		end
-		return @Paths[x]
+	def get_Paths(id)
+		return @Paths[id]
 	end
 
-	def get_Option(x)
-		if not x.is_a?(Integer)
-			return
-		end
-		return @Options[x]
+	def get_Options(id)
+		return @Options[id]
+	end
+
+	def remove_Paths(id)
+		@Paths.delete(id)
+	end
+
+	def remove_Options(id)
+		@Options.delete(id)
 	end
 
 	def get_OptionLen

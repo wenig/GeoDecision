@@ -14,9 +14,12 @@ class GeoDecision:
 			self.Options.append(x)
 		return
 
-	def add_Path(self, p):
-		if isinstance(p, list):
+	def add_Path(self, p, prio):
+		if prio == nil:
+			prio = 0
+		if isinstance(p, list) and isinstance(prio, int):
 			if all((isinstance(x,int) and len(p) == 4) for x in p):
+				p.append(prio)
 				self.Paths.append(p)
 		return
 

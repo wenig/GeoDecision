@@ -17,9 +17,10 @@ class GeoDecision
 		return
 	end
 
-	def add_Path(id, p)
+	def add_Path(id, p, prio=0)
 		if p.is_a?(Array)
-			if p.all? {|x| x.is_a?(Integer) and p.length == 4}
+			if p.all? {|x| x.is_a?(Integer) and p.length == 4 and prio.is_a?(Integer)}
+				p.push(prio)
 				@Paths[id] = p
 			end
 		end
@@ -52,7 +53,21 @@ class GeoDecision
 		icog = decide()
 		@Paths.each do |key, p|
 			closePoint = get_closest_Point_on_Path(icog, p)
-			if result.length == 0 || (getVectorLen(icog, closePoint)*((100-p[4])/100)) < getVectorLen(icog, result)
+			if result.length == 0 || getVectorLen(icog, closePoint) < getVectorLen(icog, result)
+				result = []
+				result.push(closePoint[0])
+				result.push(closePoint[1])
+			end
+		end
+		return result
+	end
+
+	def decide_Magnetic_best_Path(self)
+		result = []
+		icog = decide()
+		@Paths.each do |key, p|
+			closePoint = get_closest_Point_on_Path(icog, p)
+			if result.length == 0 or (getVectorLen(icog, closePoint)*((100-p[4])/100) < self.getVectorLen(icog, result)
 				result = []
 				result.push(closePoint[0])
 				result.push(closePoint[1])

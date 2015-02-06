@@ -58,7 +58,7 @@
 				actX = "";
 				actY = "";
 				if(document.getElementById("Control-Panel").children.length == waitpara[0]){
-					addPoint(waitpara[1]);
+					//addPoint(waitpara[1]);
 				}else{
 					editPoint(waitpara[1]);
 				}		
@@ -74,7 +74,7 @@
 	<div id="YMapsID"></div>
 	<div id="Scroll-Panel">
 		<div id="Control-Panel" class="">
-			<div id="1"><input class="px" data-number="1" type="text"><input class="py" data-number="1" type="text"><input value="0" class="pp" data-number="1" type="text"><button onclick="addPoint(this)" data-number="1" class="pb" id="button1">add</button><button data-number="1" onclick="choose(this)">choose</button></div>
+			<div id="1"><input class="px" data-number="1" type="text"><input class="py" data-number="1" type="text"><input value="0" class="pp" data-number="1" type="text"><button onclick="addPoint(this)" data-number="1" class="pb" id="button1">add</button><button id="choose1" data-number="1" onclick="choose(this)">choose</button></div>
 		</div>
 	</div>
 	<script>
@@ -110,18 +110,12 @@
 			var py = document.getElementById(input-1).childNodes[1].value;
 			var pp = document.getElementById(input-1).childNodes[2].value;
 			if(px != "" || py != ""){
-				document.getElementById("button"+(input-1)).setAttribute('onclick', 'delPoint(this)');
-				document.getElementById("button"+(input-1)).innerHTML = "delete";
-				var edit = document.createElement('button');
-				edit.setAttribute('onclick', 'editPoint(this)');
-				edit.setAttribute('data-number', input-1);
-				edit.className = 'pe';
-				edit.innerHTML = 'update coords';
-				document.getElementById(input-1).appendChild(edit);
 				addPlacemark([px, py, pp], input-1);
 	        	var div = document.createElement('div');
 	        	div.id = input;
-				div.innerHTML = '<input class="px" data-number="'+input+'" type="text"><input class="py" data-number="'+input+'" type="text"><input value="0" class="pp" data-number="'+input+'" type="text"><button onclick="addPoint(this)" data-number="'+input+'" class="pb" id="button'+input+'">add</button><button data-number="'+input+'" onclick="choose(this)">choose</button>';
+				div.innerHTML = '<input class="px" data-number="'+input+'" type="text"><input class="py" data-number="'+input+'" type="text"><input value="0" class="pp" data-number="'+input+'" type="text"><button onclick="addPoint(this)" data-number="'+input+'" class="pb" id="button'+input+'">add</button><button id="choose'+input+'" data-number="'+input+'" onclick="choose(this)">choose</button>';
+				document.getElementById(input-1).removeChild(document.getElementById("choose"+(input-1)));
+				document.getElementById(input-1).removeChild(document.getElementById("button"+(input-1)));
 	        	document.getElementById("Control-Panel").appendChild(div);
         	}
 		}

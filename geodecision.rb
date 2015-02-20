@@ -62,12 +62,12 @@ class GeoDecision
 		return result
 	end
 
-	def decide_Magnetic_best_Path(self)
+	def decide_Magnetic_best_Path
 		result = []
 		icog = decide()
 		@Paths.each do |key, p|
 			closePoint = get_closest_Point_on_Path(icog, p)
-			if result.length == 0 or (getVectorLen(icog, closePoint)*((100-p[4])/100) < self.getVectorLen(icog, result)
+			if result.length == 0 || (getVectorLen(icog, closePoint)*((100-p[4])/100) < getVectorLen(icog, result))
 				result = []
 				result.push(closePoint[0])
 				result.push(closePoint[1])
@@ -106,16 +106,13 @@ class GeoDecision
 
 	def get_closest_Point_on_Path(point, path)
 		if (path[2]-path[0]) == 0
-				y = point[1]
-				x = path[0]
+			y = point[1]
+			x = path[0]
 		elsif (path[3]-path[1]) == 0
 			y = path[1]
 			x = point[0]
 		else
 			slope = (path[3]-path[1]) / (path[2]-path[0])
-			a = getVectorLen([path[2],path[3]], point)
-			b = getVectorLen(point, [path[0],path[1]])
-			c = getVectorLen([path[0],path[1]], [path[2],path[3]])
 			t1 = path[1] - (slope*path[0])
 			t2 = point[1] - (-(slope**(-1))*point[0])
 			x = (t2 - t1)/(slope-(-(slope**(-1))))
@@ -123,6 +120,14 @@ class GeoDecision
 			y += path[1]
 			x += path[0]
 		end
-		return [x, y]
+		if x.between?(path[0], path[2]) && y.between?(path[1], path[3])
+			return [x, y]
+		else
+			if getVectorLen([x, y], [path[0], path[1]]) < getVectorLen([x, y], [path[2], path[3]])
+				return [path[0], path[1]]
+			else
+				return [path[2], path[3]]
+			end
+		end
 	end
 end

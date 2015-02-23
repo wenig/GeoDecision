@@ -6,25 +6,31 @@ class GeoDecision
 	end
 
 	def add_Option(id, x)
-		if x.is_a?(Array) && x.length == 2
-			x.push(0)
-		elsif not x.is_a?(Array) || x.length != 3
-			return
+		if x.is_a?(Array) && x.length.between?(2,4)
+			(4-x.length).times do
+				x.push(0)
+			end
+		else
+			return false
 		end
 		if x.all? {|o| o.is_a?(Integer)}
 			@Options[id] = x
 		end
-		return
+		return true
 	end
 
 	def add_Path(id, p, prio=0)
 		if p.is_a?(Array)
-			if p.all? {|x| x.is_a?(Integer) and p.length == 4 and prio.is_a?(Integer)}
+			if p.all? {|x| x.is_a?(Integer) && p.length == 4 && prio.is_a?(Integer)}
 				p.push(prio)
 				@Paths[id] = p
+				return true
+			else
+				return false
 			end
+		else
+			return false
 		end
-		return
 	end
 
 	def middle

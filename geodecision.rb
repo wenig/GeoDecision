@@ -65,6 +65,7 @@ class GeoDecision
 				result.push(closePoint[1])
 			end
 		end
+
 		return result
 	end
 
@@ -80,6 +81,16 @@ class GeoDecision
 			end
 		end
 		return result
+	end
+
+	def check_distances(center)
+		@Options.each do |key, co|
+			length = co[3] - getVectorLen([co[0], co[1]], center)
+			if length > 0
+				center = increaseVector(center, [co[0], co[1]], length)
+			end
+		end
+		return center
 	end
 
 	def get_Paths(id)
@@ -108,6 +119,14 @@ class GeoDecision
 
 	def getVectorLen(a, b)
 		return Math.sqrt(((b[1]-a[1])**2)+((b[0]-a[0])**2))
+	end
+
+	def increaseVector(moving, fixed, distance)
+		vlength = getVectorLen(moving, fixed)
+		rel = distance/vlength
+		xadd = (moving[0]-fixed[0])*rel
+		yadd = (moving[1]-fixed[1])*rel
+		return [moving[0]+xadd, moving[1]+yadd]
 	end
 
 	def get_closest_Point_on_Path(point, path)

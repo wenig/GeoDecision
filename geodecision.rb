@@ -136,4 +136,5 @@ class GeoDecision
 			end
 		end
 	end
+	
 end
